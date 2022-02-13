@@ -25,23 +25,36 @@ namespace InterviewTask.Data.Repositories
         /// <returns></returns>
         public IEnumerable<Product> GetAllProducts()
         {
-            IEnumerable<Product> products = _dbContext.Product.ToList();
+            IEnumerable<Product> products = new List<Product>();
 
-            if (products.Any())
+            try
             {
-                foreach (var prod in products)
+
+
+                products = _dbContext.Product.ToList();
+
+                if (products.Any())
                 {
-                    List<ProductGallery> ProductGalleries = new List<ProductGallery>();
-                    ProductGalleries = GetProductGalleries(prod.Id).ToList();
+                    foreach (var prod in products)
+                    {
+                        List<ProductGallery> ProductGalleries = new List<ProductGallery>();
+                        ProductGalleries = GetProductGalleries(prod.Id).ToList();
 
-                    if (ProductGalleries.Any())
-                        prod.ProductGalleries = ProductGalleries.ToList();
+                        if (ProductGalleries.Any())
+                            prod.ProductGalleries = ProductGalleries.ToList();
+                    }
+
+                    _logger.LogInformation("Number of products returned is : {0}", products.Count());
                 }
+            }
+            catch (Exception ex)
+            {
 
-                _logger.LogInformation("Number of products returned is : {0}", products.Count());
+                // Catch the exception and log it
+                _logger.LogError("An error has occured in the GetAllProducts ", ex.InnerException);
             }
 
-            
+
 
             return products;
         }
@@ -53,13 +66,25 @@ namespace InterviewTask.Data.Repositories
         /// <returns></returns>
         public Product GetProductById(int Id)
         {
-            Product prod = _dbContext.Product
-                .Where(x => x.Id == Id)
-                .FirstOrDefault();
-
-            if (prod != null)
+            Product prod = new Product();
+            try
             {
-                prod.ProductGalleries = GetProductGalleries(prod.Id).ToList();
+
+
+                 prod = _dbContext.Product
+                    .Where(x => x.Id == Id)
+                    .FirstOrDefault();
+
+                if (prod != null)
+                {
+                    prod.ProductGalleries = GetProductGalleries(prod.Id).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+
+                // Catch the exception and log it
+                _logger.LogError("An error has occured in the GetProductById ", ex.InnerException);
             }
 
             return prod;
@@ -72,12 +97,25 @@ namespace InterviewTask.Data.Repositories
         /// <returns></returns>
         private IEnumerable<ProductGallery> GetProductGalleries(int Id)
         {
-            List<ProductGallery> ProductGalleries = new List<ProductGallery>();
-            ProductGalleries = _dbContext.ProductGalleries.ToList();
+            List<ProductGallery> ProductGalleries  = new List<ProductGallery>();
+            try
+            {
 
-            if(ProductGalleries.Any())
-            ProductGalleries = ProductGalleries.Where(x => x.ProductiD == Id).ToList();
 
+                ProductGalleries = new List<ProductGallery>();
+                ProductGalleries = _dbContext.ProductGalleries.ToList();
+
+                if (ProductGalleries.Any())
+                    ProductGalleries = ProductGalleries.Where(x => x.ProductiD == Id).ToList();
+
+
+            }
+            catch (Exception ex)
+            {
+
+                // Catch the exception and log it
+                _logger.LogError("An error has occured in the GetProductGalleries ", ex.InnerException);
+            }
             return ProductGalleries;
         }
     }
