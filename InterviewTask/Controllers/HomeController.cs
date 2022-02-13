@@ -1,4 +1,6 @@
-﻿using InterviewTask.Models;
+﻿using InterviewTask.Data.Entities;
+using InterviewTask.Data.Repositories;
+using InterviewTask.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,14 +15,25 @@ namespace InterviewTask.Controllers
 	{
 		private readonly ILogger<HomeController> _logger;
 
-		public HomeController(ILogger<HomeController> logger)
+		private readonly IProductRepository _repository;
+
+		public HomeController(ILogger<HomeController> logger, IProductRepository repository)
 		{
 			_logger = logger;
+			this._repository = repository;
 		}
 
+
 		public IActionResult Index()
-		{
-			return View();
+        {
+            int? id = null;
+            List<Product> products = null;
+			products = _repository.GetAllProducts().ToList();
+			if (products != null)
+				id = products[0].Id;
+			ViewBag.Id = id;
+
+            return View();
 		}
 
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -28,5 +41,6 @@ namespace InterviewTask.Controllers
 		{
 			return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 		}
+
 	}
 }
