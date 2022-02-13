@@ -1,0 +1,68 @@
+﻿@using InterviewTask.Data.Entities
+@model Product
+
+@{
+    ViewBag.Title = "Shopping Cart";
+}
+<script src="~/lib/jquery/dist/jquery.min.js"
+        type="text/javascript"></script>
+
+<script type="text/javascript">
+    $(function () {
+
+        // Document.ready -> link up remove event handler
+        $(".AddLink").click(function () {
+
+            // Get the id from the link
+            var recordToAdd = $(this).attr("data-id");
+            if (recordToAdd != '') {
+                // Perform the ajax post
+                $.post("/Cart/add", {"id": recordToAdd },
+                    function (data) {
+                        // Successful requests get here
+                        // Update the page elements
+
+                        $('#update-message').text("The product has been added to the cart.");
+
+                    });
+            }
+        });
+    });
+</script>
+
+<h1>Product Details</h1>
+
+<div class="row">
+
+    <div class="col-md-6">
+        <div id="update-message" class="text-success">
+        </div>
+        <div class="border bg-light rounded p-1">
+            <h3>@Model.Title</h3>
+
+            <div class="carousel slide" data-ride="carousel" data-interval="2000" style="width:192px;">
+                <div class="carousel-inner">
+                    @foreach (var item in @Model.ProductGalleries)
+                    {
+
+                        <div class="carousel-item @(item == Model.ProductGalleries.First() ? "active" : "")">
+                            <img src="~/@item.Url" class="img-fluid" alt="@Model.Title" />
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <label> <b>Description :</b> @Model.Description </label> <br />
+            <label> <b>Price : </b>$ @Model.Price .00</label>
+            <br>
+
+
+            @* <a asp-controller="cart" asp-action="Add" asp-route-id = "@Model.Id" class="btn btn-success" >Add to Cart</a>*@
+
+            <a class="AddLink btn btn-success" data-id="@Model.Id">Add to Cart</a>
+
+        </div>
+    </div>
+
+
+</div>

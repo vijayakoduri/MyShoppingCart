@@ -1,0 +1,37 @@
+﻿@using InterviewTask.Data.Entities
+@model IEnumerable<Product>
+<h1>List of Products</h1>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-6">
+            <div class="border bg-light rounded p-1">
+                <h3>@item.Title</h3>
+               
+
+                <div class="carousel slide" data-ride="carousel" data-interval="2000" style="width:192px;">
+                    <div class="carousel-inner">
+                        @foreach (var im in @item.ProductGalleries)
+                        {
+
+                            <div class="carousel-item @(im == @item.ProductGalleries.First() ? "active" : "")">
+                                <img src="~/@im.Url" class="img-fluid" alt="@item.Title" />
+                            </div>
+                        }
+                    </div>
+                </div>
+
+
+                <label> <b>Description :</b> @item.Description </label> <br/>
+                 <label> <b>Price :</b> $ @item.Price .00</label>
+
+                <h4 class="fw-bold mb-0">
+                    <a asp-route-id="@item.Id" asp-action="ViewProduct" asp-controller="Product">View the product</a>
+                </h4>
+
+            </div>
+        </div>
+
+    }
+</div>
